@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -9,6 +8,7 @@ import (
 	"github.com/kingxl111/RESTapiService/pkg/handler"
 	"github.com/kingxl111/RESTapiService/pkg/repository"
 	"github.com/kingxl111/RESTapiService/pkg/service"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
 	// "database/sql"
@@ -24,27 +24,27 @@ func migrat() {
 	dbURL := "postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable"
     db, err := sql.Open("postgres", dbURL)
     if err != nil {
-        log.Fatalf("Could not open database: %v", err)
+        logrus.Fatalf("Could not open database: %v", err)
     }
 
     driver, err := postgres.WithInstance(db, &postgres.Config{})
     if err != nil {
-        log.Fatalf("Could not create driver: %v", err)
+        logrus.Fatalf("Could not create driver: %v", err)
     }
 
     m, err := migrate.NewWithDatabaseInstance(
         "file://schema",
         "postgres", driver)
 		if err != nil {
-			log.Fatalf("Could not create migrate instance: %v", err)
+			logrus.Fatalf("Could not create migrate instance: %v", err)
 		}
 
 		// Применяем миграции
 		if err := m.Up(); err != nil {
-			log.Fatalf("Could not apply migrations: %v", err)
+			logrus.Fatalf("Could not apply migrations: %v", err)
 		}
 
-		log.Println("Migrations applied successfully")
+		logrus.Println("Migrations applied successfully")
 }
 
 // sudo docker exec -it todo-db psql -U postgres -d postgres
@@ -67,17 +67,18 @@ func migrat() {
 
 func main() {
 
+	// Задаем формат логов
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	// migrat()
-
-
 
 	// Инициализируем конфиги всегда вначале 
 	if err := initConfig(); err != nil {
-		log.Fatalf("error initializing configs: %s", err.Error())
+		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
 
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("error loading env variables: %s", err.Error())
+		logrus.Fatalf("error loading env variables: %s", err.Error())
 	}
 
 	// Инициализируем базу данных
@@ -91,7 +92,7 @@ func main() {
 	})
 
 	if err != nil {
-		log.Fatalf("Failed to initializing database: %s", err.Error())
+		logrus.Fatalf("Failed to initializing database: %s", err.Error())
 	}
 
 	repos := repository.NewRepository(db)
@@ -104,7 +105,7 @@ func main() {
 	srv := new(todo.Server)
 
 	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		log.Fatalf("error appeared while running http server: %s", err.Error())
+		logrus.Fatalf("error appeared while running http server: %s", err.Error())
 	}
 
 }

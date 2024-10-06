@@ -1,8 +1,34 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	todo "github.com/kingxl111/RESTapiService"
+)
 
 func (h *Handler) signUp(c *gin.Context) {
+	var input todo.User
+
+	// в input хотим распарсить тело JSON который получили от пользователя, поэтому передаем его по ссылке
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return 
+	}
+	
+	// Создаем пользователя
+	id, err := h.services.Authorization.CreateUser(input)
+	// Если не удалось создать нового пользователя, надо сообщить ему, что ошибка на стороне сервера
+	// То есть вернуть ошибку 500 - internalError
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return 
+	}
+
+	// Если всё хорошо, то будет статус 200 - StatusOK
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"id" : id,
+	})
 
 }
 
