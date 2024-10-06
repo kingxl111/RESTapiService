@@ -10,6 +10,8 @@ require (
 require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/jmoiron/sqlx v1.4.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/knz/go-libedit v1.10.1 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 )
