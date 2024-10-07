@@ -27,7 +27,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	}
 
 	// Непосредственно маршрутизация внутри нашего основного функционала
-	api := router.Group("/api") 
+	api := router.Group("/api", h.userIdentity) 
 	{
 		// Создаем еще одну группу для работы со списками todo
 		lists := api.Group("/lists")

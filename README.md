@@ -28,3 +28,6 @@ go get github.com/sirupsen/logrus
 sudo docker start <container_name>
 sudo docker exec -it <container_id> /bin/bash
 psql -U <database_user>
+
+Библиотека для работы с токенами JWT
+go get -u github.com/golang-jwt/jwt/v5
