@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	todo "github.com/kingxl111/RESTapiService"
 )
 
 // В этом handler'е будет обработка списков todo
@@ -19,10 +20,28 @@ import (
 */
 
 func (h *Handler) createList(c *gin.Context) {
-	id, _ := c.Get(userCtx) // const userCtx здесь задается в middleware(назвать его можно как угодно)
- 	c.JSON(http.StatusOK, map[string]interface{}{
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	var input todo.TodoList
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return 
+	}
+
+	// call service 
+	id, err := h.services.TodoList.Create(userId, input)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return 
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
 		"id": id,
 	})
+
 }
 
 

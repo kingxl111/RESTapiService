@@ -24,7 +24,7 @@ go get github.com/sirupsen/logrus
 
 
 Важный момент: исходную миграцию с созданием всех таблиц базы данных
-нужно сделать единожды после создание контейнера с postgreSQL
+нужно сделать ондажды после создание контейнера с postgreSQL
 sudo docker start <container_name>
 sudo docker exec -it <container_id> /bin/bash
 psql -U <database_user>
