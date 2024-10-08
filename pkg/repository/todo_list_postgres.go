@@ -48,3 +48,17 @@ func (r *TodoListPostgres) Create(userId int, list todo.TodoList) (int, error) {
 	// вызываем Commit, который применяет изменения к базе данных, и заканчиваем транзакцию
 	return id, tx.Commit()
 }
+
+
+func (r *TodoListPostgres) GetAll(userId int) ([]todo.TodoList, error) {
+	var lists []todo.TodoList
+	
+	// INNER JOIN помогает выбрать только те записи, которые имеют одинаковые значение в обеих таблицах
+	// То есть мы для каждого пользователя хотим выделить все его списки
+	query := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1", todoListTable, usersListsTable)
+	
+	// Select работает аналогично методу Get, но применяется при выборке больше одного элемента и записи в slice
+	err := r.db.Select(&lists, query, userId)
+	
+	return lists, err
+}
