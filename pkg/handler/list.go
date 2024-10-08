@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	todo "github.com/kingxl111/RESTapiService"
@@ -67,9 +68,26 @@ func (h *Handler) getAllLists(c *gin.Context) {
 
 }
 
-
 func (h *Handler) getListById(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
+	listId, err := strconv.Atoi(c.Param("id")) // id здесь появляется из пути маршрутизатора в handler	
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+
+	// call service 
+	list, err := h.services.TodoList.GetList(userId, listId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, list)
 }
 
 
